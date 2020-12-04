@@ -17,8 +17,8 @@ private :
 			next = n;
 		}
 	};
-	Node* head;//指向第一个节点
-	Node* fail;//指向最后一个节点的后续
+	Node* head;//point the first node
+	Node* fail;//point the last node
 
 public :
 	class iterator
