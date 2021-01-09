@@ -1,3 +1,6 @@
+/*
+Use function template and class template to create my own list which has some of functions of the list in STL
+*/
 #include<stdio.h>
 
 template<class T>
@@ -18,9 +21,10 @@ private :
 		}
 	};
 	Node* head;//point the first node
-	Node* fail;//point the last node
+	Node* tail;//point the last node
 
 public :
+	//Define iterator
 	class iterator
 	{
 	private:
@@ -34,6 +38,8 @@ public :
 		{
 			pointer = p;
 		}
+
+		//Operators Overloading
 		T* operator->()
 		{
 			return pointer->pdata;
@@ -60,53 +66,43 @@ public :
 		{
 			return *pointer->pdata;
 		}
-		iterator operator+(int n)//not test
-		{
-			for (int i = 0; i < n; i++)
-				pointer = pointer->next;
-			return *this;
-		}
-		iterator operator-(int n)//not test
-		{
-			for (int i = 0; i < n; i++)
-				pointer = pointer->prev;
-			return *this;
-		}
+
 		Node* NodePointer()
 		{
 			return pointer;
 		}
 	};
 
+	//Constructors
 	mylist()
 	{
-		head = fail = (Node*)malloc(sizeof(Node));
+		head = tail = (Node*)malloc(sizeof(Node));
 	}
-
 	mylist(T* startp, int size)
 	{
 		if (size >= 1)
 		{
 			T* p = startp;
 
-			head = fail = new Node(p, NULL, NULL);
+			head = tail = new Node(p, NULL, NULL);
 
 			Node* newNode = new Node(&p[0], NULL, NULL);
-			fail->prev = newNode;
-			newNode->next = fail;
+			tail->prev = newNode;
+			newNode->next = tail;
 			head = newNode;
 
 			for (int i = 1; i < size; i++)
 			{
 				newNode = new Node(&p[i], NULL, NULL);
-				newNode->prev = fail->prev;
-				newNode->next = fail;
+				newNode->prev = tail->prev;
+				newNode->next = tail;
 				newNode->prev->next = newNode;
 				newNode->next->prev = newNode;
 			}
 		}
 	}
 	
+	//The destructor
 	~mylist()
 	{
 		Node* p,*pr;
@@ -119,6 +115,7 @@ public :
 		}
 	}
 	
+	//Functions
 	iterator& begin()
 	{
 		iterator it(head);
@@ -127,7 +124,7 @@ public :
 
 	iterator& end()
 	{
-		iterator it(fail);
+		iterator it(tail);
 		return it;
 	}
 
@@ -139,32 +136,36 @@ public :
 		this->head = b.head;
 		b.head = p;
 
-		p = this->fail;
-		this->fail = b.fail;
-		b.fail = p;
+		p = this->tail;
+		this->tail = b.tail;
+		b.tail = p;
 	}
 
-	void insert(iterator pos, T e)//not test
+	void insert(iterator pos, T e)
 	{
-		Node* newElement = new Node(new T(e), NULL, NULL);
+		Node* newElement = new Node(new T(e), NULL, NULL);//Create new node
+		//insert
 		newElement->prev = pos.NodePointer()->prev;
 		newElement->next = pos.NodePointer();
 		if (newElement->prev != NULL)
 			newElement->prev->next = newElement;
 		if (newElement->next != NULL)
 			newElement->next->prev = newElement;
+		//If pos is head, let head pointer point the new node
 		if (pos == begin())
 			head = newElement;
 	}
 
 	void erase(iterator begin, iterator end)
 	{
+		//Remove the nodes between begin and end from the list
 		if (begin.NodePointer()->prev != NULL)
 			begin.NodePointer()->prev->next = end.NodePointer();
 		else
 			head = end.NodePointer();
 		end.NodePointer()->prev = begin.NodePointer()->prev;
 
+		//Delete useless nodes
 		Node* p, * pr;
     		pr = p = begin.NodePointer();
 		while (p != end.NodePointer())
@@ -177,11 +178,12 @@ public :
 
 	void clear()
 	{
+		//Delete all nodes
 		Node* p, * pr;
 		pr = p = head;
-		head = fail;
+		head = tail;
 		head->prev = NULL;
-		while (p != fail)
+		while (p != tail)
 		{
 			p = p->next;
 			delete pr;
@@ -191,34 +193,36 @@ public :
 
 	bool empty()
 	{
-		return head == fail;
+		return head == tail;
 	}
 
 	T* front()
 	{
-		return head==fail?NULL:head->pdata;
+		//if the list is empty,return null. Otherwise return the first data
+		return head==tail?NULL:head->pdata;
 	}
 
 	T* back()
 	{
-		return fail->prev == NULL ? NULL : fail->prev->pdata;
+		//if the list is empty,return null. Otherwise return the last data
+		return tail->prev == NULL ? NULL : tail->prev->pdata;
 	}
 
 	void push_back(T e)
 	{
 		Node* newNode;
-		if (head == fail)
+		if (head == tail)//The way of pushing depends on whether the list is empty or not
 		{
 			newNode = new Node(new T(e), NULL, NULL);
-			fail->prev = newNode;
-			newNode->next = fail;
+			tail->prev = newNode;
+			newNode->next = tail;
 			head = newNode;
 		}
 		else
 		{
 			newNode = new Node(new T(e), NULL, NULL);
-			newNode->prev = fail->prev;
-			newNode->next = fail;
+			newNode->prev = tail->prev;
+			newNode->next = tail;
 			newNode->prev->next = newNode;
 			newNode->next->prev = newNode;
 		}
@@ -226,24 +230,25 @@ public :
 
 	void pop_back(T&e)
 	{
-		if (head == fail)
-			return;
+		if (head == tail)
+			return;//If the list is empty, pop nothing
 		else
 		{
-			e = *(fail->prev->pdata);
+			e = *(tail->prev->pdata);//Get the last data
+			//Remove the last node
 			Node* p;
-			if (fail->prev == head)
+			if (tail->prev == head)//The way of removing depends on whether the list only has one node or not
 			{
 				p = head;
-				head = fail;
-				fail->prev = NULL;
+				head = tail;
+				tail->prev = NULL;
 				delete p;
 			}
 			else
 			{
-				p = fail->prev;
-				fail->prev = fail->prev->prev;
-				fail->prev->next = fail;
+				p = tail->prev;
+				tail->prev = tail->prev->prev;
+				tail->prev->next = tail;
 				delete p;
 			}
 		}
@@ -251,6 +256,7 @@ public :
 
 	void push_front(T e)
 	{
+		//Make the new node become the new head
 		Node* newNode = new Node(new T(e), NULL, NULL);
 		newNode->next = head;
 		newNode->next->prev = newNode;
@@ -259,41 +265,48 @@ public :
 
 	void splice(iterator pos, mylist<T>& a)
 	{
+		//Insert all nodes in list 'a' one by one to the position pointed by pos
 		for (iterator it = a.begin(); it != a.end(); ++it)
 		{
 			insert(pos, *it);
 		}
+		//Clear list 'a'
 		a.clear();
 	}
 
 	void splice(iterator pos, mylist<T>& a,iterator abeg,iterator aend)
 	{
+		//Insert all nodes between abeg and aend one by one to the position pointed by pos
 		for (iterator it = abeg; it != aend; ++it)
 		{
 			insert(pos, *it);
 		}
+		//Remove all nodes between abeg and aend from list 'a'
 		a.erase(abeg,aend);
 	}
 
 	void splice(iterator pos, mylist<T>& a, iterator posa)
 	{
+		//Insert all nodes from posa to the end of list 'a' one by one to the position pointed by pos
 		for (iterator it = posa; it != a.end(); ++it)
 		{
 			insert(pos, *it);
 		}
+		//Remove all nodes from posa to the end of list 'a' from list 'a'
 		a.erase(posa,a.end());
 	}
 
 	void unique()
 	{
-		if (head == fail)return;
+		if (head == tail)return;//if the list is empty, return
 		Node* p, * pr;
 		pr = head;
 		p = head->next;
-		while (p != fail)
+		while (p != tail)
 		{
 			if (*pr->pdata == *p->pdata)
 			{
+				//Remove the same and neighbouring data from the list
 				pr->next = p->next;
 				pr->next->prev = pr;
 				delete p;
@@ -309,19 +322,19 @@ public :
 
 	void remove(T x)
 	{
-		if (head == fail)return;
+		if (head == tail)return;//If the list is empty, return
 		Node* p, * pr;
 		p = pr = head;
-		while(p!=fail&&*p->pdata == x)
+		while(p!=tail&&*p->pdata == x)//When the first data of the list is x, use this way to remove the first node. Keep doing it until the first data isn't x.
 		{
 			head = head->next;
 			head->prev = NULL;
 			delete p;
 			p = pr = head;
 		}
-		if (p == fail)return;
+		if (p == tail)return;//If the list is empty, return
 		p = p->next;
-		while (p != fail)
+		while (p != tail)//Check the remaining data. If it is x, remove it from list
 		{
 			if (*p->pdata == x)
 			{
@@ -339,15 +352,16 @@ public :
 
 	void Sort()
 	{
-		if (head == fail)return;
-		Node* p, * max, * sfail;
+		if (head == tail)return;//If the list is empty, return
+		//Selection sort
+		Node* p, * max, * stail;
 		T* c;
-		sfail = fail->prev;
-		while (sfail != head)
+		stail = tail->prev;
+		while (stail != head)
 		{
 			p = head;
 			max = p;
-			while (p != sfail->next)
+			while (p != stail->next)
 			{
 				if (*p->pdata > *max->pdata)
 				{
@@ -355,24 +369,25 @@ public :
 				}
 				p = p->next;
 			}
-			c = sfail->pdata;
-			sfail->pdata = max->pdata;
+			c = stail->pdata;
+			stail->pdata = max->pdata;
 			max->pdata = c;
 
-			sfail = sfail->prev;
+			stail = stail->prev;
 		}
 	}
 
 	void reverse()
 	{
-		if (head == fail)return;
+		if (head == tail)return;//If the list is empty, return
 
 		Node* p1, * p2;
 		T* c;
 
 		p1 = head;
-		p2 = fail->prev;
+		p2 = tail->prev;
 
+		//exchange the data in p1 and p2. p1 moves forward from the head and p2 moves back from the tail
 		while (p1 != p2 && p2->next != p1)
 		{
 			c = p1->pdata;
@@ -388,14 +403,14 @@ public :
 	{
 		Node* p;
 		iterator it;
-		for (it = a.begin(), p = head; it != a.end() && p != fail; ++it,p=p->next)
+		for (it = a.begin(), p = head; it != a.end() && p != tail; ++it,p=p->next)//Compare the data in two list until one or more pointers get to the tails.
 		{
-			if (*it != *(p->pdata))
+			if (*it != *(p->pdata))//When find unmatched data, return false
 			{
 				return false;
 			}
 		}
-		if (it == a.end() && p == fail)
+		if (it == a.end() && p == tail)//If both pointers get to the tails, return true. Otherwise return false.
 		{
 			return true;
 		}
@@ -408,40 +423,41 @@ public :
 	void copylink(mylist<T>& a)
 	{
 		Node* myp,*ap;
-		for (myp=head,ap=a.head;myp!=fail&&ap!=a.fail;myp=myp->next,ap=ap->next)
+		//Copy the data in list 'a' one by one. Meanwhile, delete the original data in this list
+		for (myp=head,ap=a.head;myp!=tail&&ap!=a.tail;myp=myp->next,ap=ap->next) 
 		{
 			T* r = myp->pdata;
 			myp->pdata = new T(*ap->pdata);
 			delete r;
 		}
-		while (myp != fail)//如果数据全部复制完成，而本方没到尾部，删除剩下部分
+		while (myp != tail)//If all data has been copied but the point still don't reach the tail, delete the remaining part
 		{
 			iterator it(myp);
 			erase(it, end());
 		}
-		while (ap!=a.fail)//如果本方已到尾部，而数据没有复制完，则把剩下数据加到尾部
+		while (ap!=a.tail)//If the point reach the tail but not all data has been copied, put the remaining data behind the tail
 		{
 			push_back(*(new T(*ap->pdata)));
 			ap = ap->next;
 		}
 	}
 
-	void getfilepdata(FILE* fp)
+	void getfilepdata(FILE* fp)//Get data from a file
 	{
 		if (feof(fp))return;
 		char startc = fgetc(fp);
-		head = fail = new Node(new char(startc), NULL, NULL);
+		head = tail = new Node(new char(startc), NULL, NULL);
 		Node* newNode = new Node(new char(startc), NULL, NULL);
-		fail->prev = newNode;
-		newNode->next = fail;
+		tail->prev = newNode;
+		newNode->next = tail;
 		head = newNode;
 		while (!feof(fp))
 		{
 			char c = fgetc(fp);
 
 			newNode = new Node(new char(c), NULL, NULL);
-			newNode->prev = fail->prev;
-			newNode->next = fail;
+			newNode->prev = tail->prev;
+			newNode->next = tail;
 			newNode->prev->next = newNode;
 			newNode->next->prev = newNode;
 		}
