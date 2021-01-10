@@ -22,13 +22,13 @@ int main()
 
 	cout << "swap:" << endl;
 	start = clock();
-	for (int i = 0; i < 1000000; i++)
+	for (int i = 0; i < 1000001; i++)
 		amlist.swap(bmlist);
 	end = clock();
 	time = (double)end - (double)start;
 	cout << "mylist:" << time << "*10^-6ms" << endl;
 	start = clock();
-	for (int i = 0; i < 1000000; i++)
+	for (int i = 0; i < 1000001; i++)
 		alist.swap(blist);
 	end = clock();
 	time = (double)end - (double)start;
@@ -85,7 +85,9 @@ int main()
 	for (int i = 0; i < 1000000; i++)
 	{
 		mylist<int>::iterator itbeg = amlist.begin();
-		amlist.erase(itbeg, ++itbeg);
+		mylist<int>::iterator itend = ++itbeg;
+		itbeg = amlist.begin();
+		amlist.erase(itbeg, itend);
 	}
 	end = clock();
 	time = (double)end - (double)start;
@@ -356,7 +358,7 @@ int main()
 
 	cout << "reverse(£©:" << endl;
 	start = clock();
-	for (int i = 0; i < 1000000; i++)
+	for (int i = 0; i < 1000001; i++)
 	{
 		amlist.reverse();
 	}
@@ -364,7 +366,7 @@ int main()
 	time = (double)end - (double)start;
 	cout << "mylist:" << time << "*10^-6ms" << endl;
 	start = clock();
-	for (int i = 0; i < 1000000; i++)
+	for (int i = 0; i < 1000001; i++)
 	{
 		alist.reverse();
 	}

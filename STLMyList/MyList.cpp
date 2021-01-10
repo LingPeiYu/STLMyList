@@ -9,9 +9,9 @@ class mylist
 private :
 	struct Node
 	{
-		T*pdata;
-		Node* prev;
-		Node* next;
+		T*pdata;//Point data
+		Node* prev;//Point the previous node
+		Node* next;//Point the next node
 
 		Node(T*d, Node* p, Node* n)
 		{
@@ -20,8 +20,8 @@ private :
 			next = n;
 		}
 	};
-	Node* head;//point the first node
-	Node* tail;//point the last node
+	Node* head;//Point the first node
+	Node* tail;//Point the last node
 
 public :
 	//Define iterator
@@ -143,7 +143,7 @@ public :
 
 	void insert(iterator pos, T e)
 	{
-		Node* newElement = new Node(new T(e), NULL, NULL);//Create new node
+		Node* newElement = new Node(new T(e), NULL, NULL);//Create a new node
 		//insert
 		newElement->prev = pos.NodePointer()->prev;
 		newElement->next = pos.NodePointer();
@@ -151,7 +151,7 @@ public :
 			newElement->prev->next = newElement;
 		if (newElement->next != NULL)
 			newElement->next->prev = newElement;
-		//If pos is head, let head pointer point the new node
+		//If pos points the first node, let the head pointer points the new node
 		if (pos == begin())
 			head = newElement;
 	}
@@ -198,13 +198,13 @@ public :
 
 	T* front()
 	{
-		//if the list is empty,return null. Otherwise return the first data
+		//If the list is empty,return null. Otherwise return the pointer of the first data
 		return head==tail?NULL:head->pdata;
 	}
 
 	T* back()
 	{
-		//if the list is empty,return null. Otherwise return the last data
+		//If the list is empty,return null. Otherwise return the pointer of the last data
 		return tail->prev == NULL ? NULL : tail->prev->pdata;
 	}
 
@@ -231,7 +231,7 @@ public :
 	void pop_back(T&e)
 	{
 		if (head == tail)
-			return;//If the list is empty, pop nothing
+			return;//If the list is empty, return
 		else
 		{
 			e = *(tail->prev->pdata);//Get the last data
@@ -256,7 +256,7 @@ public :
 
 	void push_front(T e)
 	{
-		//Make the new node become the new head
+		//Make a new node become the new head
 		Node* newNode = new Node(new T(e), NULL, NULL);
 		newNode->next = head;
 		newNode->next->prev = newNode;
@@ -265,12 +265,12 @@ public :
 
 	void splice(iterator pos, mylist<T>& a)
 	{
-		//Insert all nodes in list 'a' one by one to the position pointed by pos
+		//Insert all nodes in List 'a' one by one to the position pointed by pos
 		for (iterator it = a.begin(); it != a.end(); ++it)
 		{
 			insert(pos, *it);
 		}
-		//Clear list 'a'
+		//Clear List 'a'
 		a.clear();
 	}
 
@@ -281,18 +281,18 @@ public :
 		{
 			insert(pos, *it);
 		}
-		//Remove all nodes between abeg and aend from list 'a'
+		//Remove all nodes between abeg and aend from List 'a'
 		a.erase(abeg,aend);
 	}
 
 	void splice(iterator pos, mylist<T>& a, iterator posa)
 	{
-		//Insert all nodes from posa to the end of list 'a' one by one to the position pointed by pos
+		//Insert all nodes from posa to the end of List 'a' one by one to the position pointed by pos
 		for (iterator it = posa; it != a.end(); ++it)
 		{
 			insert(pos, *it);
 		}
-		//Remove all nodes from posa to the end of list 'a' from list 'a'
+		//Remove all nodes from posa to the end of List 'a' from List 'a'
 		a.erase(posa,a.end());
 	}
 
@@ -387,7 +387,7 @@ public :
 		p1 = head;
 		p2 = tail->prev;
 
-		//exchange the data in p1 and p2. p1 moves forward from the head and p2 moves back from the tail
+		//Exchange the data in p1 and p2. p1 moves forward from the head and p2 moves back from the tail
 		while (p1 != p2 && p2->next != p1)
 		{
 			c = p1->pdata;
@@ -403,14 +403,14 @@ public :
 	{
 		Node* p;
 		iterator it;
-		for (it = a.begin(), p = head; it != a.end() && p != tail; ++it,p=p->next)//Compare the data in two list until one or more pointers get to the tails.
+		for (it = a.begin(), p = head; it != a.end() && p != tail; ++it,p=p->next)//Compare the data in two lists until one or more iterators get to the tails.
 		{
 			if (*it != *(p->pdata))//When find unmatched data, return false
 			{
 				return false;
 			}
 		}
-		if (it == a.end() && p == tail)//If both pointers get to the tails, return true. Otherwise return false.
+		if (it == a.end() && p == tail)//If both iterators get to the tails, return true. Otherwise return false.
 		{
 			return true;
 		}
@@ -423,19 +423,19 @@ public :
 	void copylink(mylist<T>& a)
 	{
 		Node* myp,*ap;
-		//Copy the data in list 'a' one by one. Meanwhile, delete the original data in this list
+		//Copy the data in List 'a' one by one. Meanwhile, delete the original data in this list
 		for (myp=head,ap=a.head;myp!=tail&&ap!=a.tail;myp=myp->next,ap=ap->next) 
 		{
 			T* r = myp->pdata;
 			myp->pdata = new T(*ap->pdata);
 			delete r;
 		}
-		while (myp != tail)//If all data has been copied but the point still don't reach the tail, delete the remaining part
+		while (myp != tail)//If all data has been copied but the pointer still don't reach the tail, delete the remaining part
 		{
 			iterator it(myp);
 			erase(it, end());
 		}
-		while (ap!=a.tail)//If the point reach the tail but not all data has been copied, put the remaining data behind the tail
+		while (ap!=a.tail)//If the pointer reach the tail but not all data has been copied, put the remaining data behind the tail
 		{
 			push_back(*(new T(*ap->pdata)));
 			ap = ap->next;
