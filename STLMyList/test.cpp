@@ -337,11 +337,11 @@ int main()
 	cout << "list:" << time << "*10^-6ms" << endl;
 	cout << endl;
 
-	cout << "Sort(£©:" << endl;
+	cout << "sort(£©:" << endl;
 	start = clock();
 	for (int i = 0; i < 1000000; i++)
 	{
-		amlist.Sort();
+		amlist.sort();
 	}
 	end = clock();
 	time = (double)end - (double)start;

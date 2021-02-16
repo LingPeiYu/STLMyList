@@ -1,5 +1,5 @@
 /*
-Use function template and class template to create my own list which has some of functions of the list in STL
+Use function template and class template to create my own list which has some of the functions of the list in STL
 */
 #include<stdio.h>
 
@@ -350,7 +350,7 @@ public :
 		}
 	}
 
-	void Sort()
+	void sort()
 	{
 		if (head == tail)return;//If the list is empty, return
 		//Selection sort
@@ -435,7 +435,7 @@ public :
 			iterator it(myp);
 			erase(it, end());
 		}
-		while (ap!=a.tail)//If the pointer reach the tail but not all data has been copied, put the remaining data behind the tail
+		while (ap!=a.tail)//If the pointer reaches the tail but not all data has been copied, supplement the remaining data behind the tail
 		{
 			push_back(*(new T(*ap->pdata)));
 			ap = ap->next;
